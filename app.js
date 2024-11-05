@@ -1,34 +1,21 @@
-// const http = require("http");
 const express = require("express");
-1;
-// const routes = require("./routes");
-
 const app = express();
+const path = require("path");
 const bodyParser = require("body-parser");
 
-app.use(bodyParser.urlencoded({ extended: false }));
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
-app.use("/add-product", (req, res, next) => {
-  console.log("in the middle 2");
-  res.send(`
-        <html>
-        <form action="/product" method="POST">
-          <input type="text" name="title">
-          <button type="submit">Add Product</button>
-        </form>
-        </html>
-    `);
+app.use(bodyParser.urlencoded({ extended: false })); // parse incoming requests
+
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
+
+app.use(express.static(path.join(__dirname, "public"))); // serve static files
+app.use((req, res, next) => { 
+  res.status(404).sendFile(path.join(__dirname, "views", "not-found.html"));
 });
 
-app.post("/product", (req, res, next) => {
-  console.log(req.body);
-  res.redirect("/");
-});
-
-app.use("/", (req, res, next) => {
-  console.log("in the middle LAST");
-  res.send("<h1>HELLOW APP</h1>");
-});
 // the request listener is a function that will be called when a request is received
 // const server = http.createServer(app);
 app.listen(3000);
